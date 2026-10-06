@@ -502,8 +502,9 @@ def main(argv=None):
         if not shutil.which(command):
             raise Error(f'필요한 명령이 없습니다: {command}')
     local = home_path(value, home)
-    for protected in [state, Path(__file__).resolve(), home / '.local/bin/42usb']:
-        if beneath(protected, local) or beneath(local, state):
+    install_root = Path(os.environ.get('FORTYTWO_USB_INSTALL_ROOT', str(home / '.local/share/42usb')))
+    for protected in [state, Path(__file__).resolve(), home / '.local/bin/42usb', install_root]:
+        if beneath(protected, local) or beneath(local, state) or beneath(local, install_root):
             raise Error(f'42usb 자체 또는 작업 기록을 포함하는 경로는 이동할 수 없습니다: {local}')
     if not sys.stdin.isatty():
         raise Error('USB 확인을 위해 대화형 터미널에서 실행하세요.')
